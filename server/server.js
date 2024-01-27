@@ -12,6 +12,7 @@ const db = new pg.Client({
     ssl: {
         require: true
     }
+    // 
 });
 
 db.connect();
