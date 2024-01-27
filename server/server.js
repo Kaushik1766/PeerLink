@@ -12,7 +12,8 @@ const db = new pg.Client({
     ssl: {
         require: true
     }
-    // 
+    // jklkjlkj
+    console.log('jka');
 });
 
 db.connect();
