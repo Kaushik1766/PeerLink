@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 function Login() {
   return (
-    <section id="Login">
+    <section id="Login" onClick={(e) => e.preventDefault()}>
       <div className="container">
         <div className="row justify-content-evenly align-content-center vh-100">
           <div className="mt-5 col-4">
