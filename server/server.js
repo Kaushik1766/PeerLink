@@ -34,12 +34,51 @@ app.post('/register', async (req, res) => {
                     res.send('error occured');
                 }
                 else {
-                    await db.query(`insert into pendingrequests(uid,password) values('${uid}', '${password}')`);
+                    await db.query(`insert into pendingrequests(uid,password) values('${uid}', '${hashedPassword}')`);
                     res.send('registration awaiting for approval')
                 }
             })
         }
+    }
+    else {
+        res.send('user already registered');
+    }
+})
 
+app.post('/login', async (req, res) => {
+    let { uid, password } = req.body;
+    let hashedPassword = ((await db.query(`select * from users where uid = '${uid}'`)).rows[0])
+    hashedPassword = hashedPassword.password
+    bcrypt.compare(password, hashedPassword, async (err, result) => {
+        if (err) {
+            console.log('error occured');
+            res.send('error occured')
+        }
+        if (result) {
+            const sessionId = uuidv4();
+            await db.query(`update users set sessionid = '${sessionId}' where uid = '${uid}'`);
+            res.send(sessionId);
+        }
+        else {
+            res.send('invalid credentials')
+        }
+    })
+})
+
+app.post('/session', async (req, res) => {
+    let user = '';
+    if (req.body.sessionID) {
+        let prevId = (await db.query(`select username from users where sessionID = '${req.body.sessionID}'`));
+        prevId = prevId.rows[0];
+        console.log(prevId);
+        if (prevId != null) {
+            user = prevId.username;
+            console.log(user);
+            res.send(user);
+        }
+        else {
+            res.send('null')
+        }
     }
 })
 
