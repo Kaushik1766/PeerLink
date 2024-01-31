@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 function Login() {
   return (
-    <section id="Login" onClick={(e) => e.preventDefault()}>
+    <section id="Login">
       <div className="container">
         <div className="row justify-content-evenly align-content-center vh-100">
           <div className="mt-5 col-4">
@@ -19,7 +19,7 @@ function Login() {
             </h5>
           </div>
           <div className="z-3 shadow-lg p-3 pt-4 mb-4 bg-white rounded col-4">
-            <form className="col-12">
+            <form onClick={(e) => e.preventDefault()} className="col-12">
               <div class="form-floating mb-3">
                 <input
                   type="email"
