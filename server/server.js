@@ -1,23 +1,48 @@
+import 'dotenv/config'
 import pg from 'pg';
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import bcrypt, { hash } from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
-let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
+let saltRounds = 4;
+const app = express();
+app.use(cors());
+const port = 3000;
+app.use(bodyParser.json());
 
-// console.log(PGHOST)
+console.log(process.env.connectionString);
+
 const db = new pg.Client({
-    user: PGUSER,
-    host: PGHOST,
-    database: PGDATABASE,
-    password: PGPASSWORD,
-    port: 5432,
-    ssl: {
-        require: true
-    }
+    connectionString: process.env.connectionString,
 });
 
 db.connect();
 
-async function getVersion() {
-    console.log((await db.query('select version()')).rows);
-}
+app.post('/register', async (req, res) => {
+    console.log(req.body);
+    let { uid, password } = req.body;
+    if ((await db.query(`select * from users where uid = '${uid}'`)).rows[0] == null) {
+        if ((await db.query(`select * from pendingrequests where uid = '${uid}'`)).rows[0] != null) {
+            res.send('registration awaiting approval');
+        }
+        else {
+            bcrypt.hash(password, saltRounds, async (err, hashedPassword) => {
+                if (err) {
+                    console.log(err);
+                    res.send('error occured');
+                }
+                else {
+                    await db.query(`insert into pendingrequests(uid,password) values('${uid}', '${password}')`);
+                    res.send('registration awaiting for approval')
+                }
+            })
+        }
 
-getVersion();
+    }
+})
+
+app.listen(port, () => {
+    console.log(`Server started on port ${port}`);
+});
