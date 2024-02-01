@@ -1,5 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "zod-schema.js";
 
 function Login() {
   // test
@@ -39,7 +40,7 @@ function Login() {
                 />
                 <label for="floatingPassword">Password</label>
               </div>
-              <button class="btn btn-primary w-100 py-2 mb-2" type="submit">
+              <button onClick="verifyUid"class="btn btn-primary w-100 py-2 mb-2" type="submit">
                 Log in
               </button>
               <hr />
