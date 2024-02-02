@@ -22,7 +22,7 @@ function Login() {
           </div>
           <div className="z-3 shadow-lg p-3 pt-4 mb-4 bg-white rounded col-4">
             <form onClick={(e) => {
-              window.alert('login')
+              verify('22sbcs14812')
               e.preventDefault()
             }} className="col-12">
               <div class="form-floating mb-3">
