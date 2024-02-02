@@ -1,6 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "zod-schema.js";
+import verify from './zod-schema'
 
 function Login() {
   // test
@@ -21,7 +21,10 @@ function Login() {
             </h5>
           </div>
           <div className="z-3 shadow-lg p-3 pt-4 mb-4 bg-white rounded col-4">
-            <form onClick={(e) => e.preventDefault()} className="col-12">
+            <form onClick={(e) => {
+              verify('22bcs14213')
+              e.preventDefault()
+              }} className="col-12">
               <div class="form-floating mb-3">
                 <input
                   type="email"
@@ -40,7 +43,7 @@ function Login() {
                 />
                 <label for="floatingPassword">Password</label>
               </div>
-              <button onClick="verifyUid"class="btn btn-primary w-100 py-2 mb-2" type="submit">
+              <button class="btn btn-primary w-100 py-2 mb-2" type="submit">
                 Log in
               </button>
               <hr />
