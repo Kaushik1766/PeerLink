@@ -79,7 +79,7 @@ app.post('/otp', async (req, res) => {
     }
 })
 
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res) => { //fix login
     let { uid, password } = req.body;
     let hashedPassword = ((await db.query(`select * from users where uid = '${uid}'`)).rows[0])
     hashedPassword = hashedPassword.password
@@ -103,13 +103,16 @@ app.post('/login', async (req, res) => {
 app.post('/session', async (req, res) => {
     let user = '';
     if (req.body.sessionID) {
-        let prevId = (await db.query(`select username from users where sessionID = '${req.body.sessionID}'`));
+        let prevId = (await db.query(`select * from users where sessionID = '${req.body.sessionID}'`));
         prevId = prevId.rows[0];
         console.log(prevId);
         if (prevId != null) {
-            user = prevId.username;
+            user = prevId.uid;
             console.log(user);
-            res.send(user);
+            res.send({
+                username: prevId.username,
+                uid: user
+            });
         }
         else {
             res.send('null')
