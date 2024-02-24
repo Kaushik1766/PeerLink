@@ -33,6 +33,7 @@ app.post('/register', async (req, res) => {
             }
             else {
 
+                // mail transporter config
                 const mailTransporter = nodemailer.createTransport({
                     service: 'Gmail',
                     auth: {
@@ -41,6 +42,7 @@ app.post('/register', async (req, res) => {
                     }
                 })
 
+                // otp generation
                 let otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false })
                 let details = {
                     from: process.env.user,
@@ -48,6 +50,7 @@ app.post('/register', async (req, res) => {
                     subject: 'OTP verification',
                     text: `Your OTP from PeerLink is ${otp}.`
                 }
+                // sending mail and updating db
                 mailTransporter.sendMail(details, async (err) => {
                     if (err) {
                         console.log(err);
@@ -81,23 +84,32 @@ app.post('/otp', async (req, res) => {
 
 app.post('/login', async (req, res) => { //fix login
     let { uid, password } = req.body;
-    let hashedPassword = ((await db.query(`select * from users where uid = '${uid}'`)).rows[0])
-    hashedPassword = hashedPassword.password
-    if ((await db.query(`select * from pendingrequests where uid = '${uid}'`)))
-        bcrypt.compare(password, hashedPassword, async (err, result) => {
-            if (err) {
-                console.log('error occured');
-                res.send('error occured')
-            }
-            if (result) {
-                const sessionId = uuidv4();
-                await db.query(`update users set sessionid = '${sessionId}' where uid = '${uid}'`);
-                res.send(sessionId);
-            }
-            else {
-                res.send('invalid credentials')
-            }
-        })
+    let userDetails = ((await db.query(`select * from users where uid = '${uid}'`)).rows[0])
+    // console.log(hashedPassword);
+    if (userDetails == null) {
+        res.send('Invalid Login')
+    }
+    else if (userDetails.verified != true) {
+        res.send('Email not verified')
+    }
+    else {
+        let hashedPassword = userDetails.password
+        if ((await db.query(`select * from pendingrequests where uid = '${uid}'`)))
+            bcrypt.compare(password, hashedPassword, async (err, result) => {
+                if (err) {
+                    console.log('error occured');
+                    res.send('error occured')
+                }
+                if (result) {
+                    const sessionId = uuidv4();
+                    await db.query(`update users set sessionid = '${sessionId}' where uid = '${uid}'`);
+                    res.send(sessionId);
+                }
+                else {
+                    res.send('invalid credentials')
+                }
+            })
+    }
 })
 
 app.post('/session', async (req, res) => {
