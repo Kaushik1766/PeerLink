@@ -1,9 +1,20 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import verify from './zod-schema'
+import { useSelector, useDispatch } from "react-redux";
+import loginSlice, { setUserData } from "../features/Login/loginSlice";
 
 function Login() {
-  // test
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.login);
+
+  const handleLoginEvent = (e) => {
+    e.preventDefault();
+    const userCredentials = { userName: "Prateek", uid: "22BCS14627" };
+    dispatch(setUserData(userCredentials));
+    console.log(userData);
+  };
+  
+  
   return (
     <section id="Login">
       <div className="container">
@@ -21,10 +32,12 @@ function Login() {
             </h5>
           </div>
           <div className="z-3 shadow-lg p-3 pt-4 mb-4 bg-white rounded col-4">
-            <form onClick={(e) => {
-              verify('22sbcs14812')
-              e.preventDefault()
-            }} className="col-12">
+            <form
+              onSubmit={(e) => {
+                handleLoginEvent(e);
+              }}
+              className="col-12"
+            >
               <div class="form-floating mb-3">
                 <input
                   type="email"
@@ -43,7 +56,13 @@ function Login() {
                 />
                 <label for="floatingPassword">Password</label>
               </div>
-              <button class="btn btn-primary w-100 py-2 mb-2" type="submit">
+              <button
+                onClick={() => {
+                  console.log(userData);
+                }}
+                class="btn btn-primary w-100 py-2 mb-2"
+                type="submit"
+              >
                 Log in
               </button>
               <hr />
