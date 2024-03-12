@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import verifyUid from "./zod-schema";
+import { useNavigate } from "react-router-dom";
 
 
 function Login() {
 
   const [userData, setUserData] = useState({ uid: '', password: '', username: '', otp: '' })
   const [useFlag, setFlag] = useState(1)
+  const navigate = useNavigate();
   function handleChange(event) {
     let { name, value } = event.target;
     setUserData((prevCreds) => {
@@ -18,6 +20,13 @@ function Login() {
   return (
     <section id="Login">
       <div className="container">
+        { useFlag>1 && (<button className="btn w-10 text- py-2 mt-2"
+          onClick={() => {
+            if (useFlag > 1) {
+              setFlag(useFlag - 1)
+            }
+          }}
+        >back</button>)}
         <div className="row justify-content-evenly align-content-center vh-100">
           <div className="mt-5 col-4">
             <h1
@@ -33,7 +42,7 @@ function Login() {
             </h5>
           </div>
           <div className="z-3 shadow-lg p-3 pt-4 mb-4 bg-white rounded col-4">
-            <form className="col-12">
+            <form className="col-12" >
               {useFlag == 1 && (
                 <>
                   <div className="form-floating mb-3">
@@ -63,7 +72,13 @@ function Login() {
                   <button className="btn btn-primary w-100 py-2 mb-2" type="submit"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (verifyUid(userData.uid)) {
+                      if (userData.uid == '') {
+                        window.alert('Enter Uid')
+                      }
+                      else if (userData.password == '') {
+                        window.alert('Enter Password')
+                      }
+                      else if (verifyUid(userData.uid)) {
                         axios.post('http://localhost:3000/login', {
                           uid: userData.uid,
                           password: userData.password
@@ -98,6 +113,9 @@ function Login() {
                   >
                     Create New Account
                   </button>
+                  <button className="btn w-100 text-black py-2 mt-2"
+                    onClick={()=>setFlag(useFlag+2)}
+                  >Verify Email</button>
                 </>
               )}
               {useFlag == 2 && (
@@ -149,7 +167,16 @@ function Login() {
                     onMouseOut={(e) => (e.target.style.backgroundColor = "#42b72a")}
                     onClick={(e) => {
                       e.preventDefault();
-                      if (verifyUid(userData.uid)) {
+                      if (userData.uid == '') {
+                        window.alert('Enter Uid')
+                      }
+                      else if (userData.password == '') {
+                        window.alert('Enter Password')
+                      }
+                      else if (userData.username == '') {
+                        window.alert('Enter Username')
+                      }
+                      else if (verifyUid(userData.uid)) {
                         axios.post('http://localhost:3000/register', {
                           uid: userData.uid,
                           password: userData.password,
@@ -199,17 +226,24 @@ function Login() {
                     <button className="btn btn-primary w-100 py-2 mb-2" type="submit"
                       onClick={(e) => {
                         e.preventDefault();
-                        axios.post('http://localhost:3000/otp', {
-                          uid: userData.uid,
-                          otp: userData.otp
-                        }).then((res) => {
-                          window.alert(res.data)
-                          console.log(res.data)
-                          if(res.data=="email verified"){}
-                        }).catch((err) => {
-                          console.log(err)
-                          window.alert(err)
-                        })
+                        if (userData.otp == '') {
+                          window.alert('Enter Otp')
+                        }
+                        else {
+                          axios.post('http://localhost:3000/otp', {
+                            uid: userData.uid,
+                            otp: userData.otp
+                          }).then((res) => {
+                            window.alert(res.data)
+                            console.log(res.data)
+                            if (res.data == "email verified") {
+                              navigate("/")
+                            }
+                          }).catch((err) => {
+                            console.log(err)
+                            window.alert(err)
+                          })
+                        }
                       }}
                     >
                       Verify
