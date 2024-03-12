@@ -73,6 +73,7 @@ function Login() {
                           window.alert(res.data)
                         }).catch((err) => {
                           console.log(err)
+                          window.alert(err)
                         })
                       }
                       else {
@@ -159,6 +160,9 @@ function Login() {
                           if (res.data == "successfully registered") {
                             setFlag(useFlag + 1)
                           }
+                        }).catch((err) => {
+                          console.log(err)
+                          window.alert(err)
                         })
                       }
                       else {
@@ -202,6 +206,9 @@ function Login() {
                           window.alert(res.data)
                           console.log(res.data)
                           if(res.data=="email verified"){}
+                        }).catch((err) => {
+                          console.log(err)
+                          window.alert(err)
                         })
                       }}
                     >
