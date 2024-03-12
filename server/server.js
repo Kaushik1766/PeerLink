@@ -82,7 +82,8 @@ app.post('/otp', async (req, res) => {
     }
 })
 
-app.post('/login', async (req, res) => { //fix login
+app.post('/login', async (req, res) => {
+     //fix login
     let { uid, password } = req.body;
     let userDetails = ((await db.query(`select * from users where uid = '${uid}'`)).rows[0])
     // console.log(hashedPassword);
@@ -103,7 +104,7 @@ app.post('/login', async (req, res) => { //fix login
                 if (result) {
                     const sessionId = uuidv4();
                     await db.query(`update users set sessionid = '${sessionId}' where uid = '${uid}'`);
-                    res.send(sessionId);
+                    res.send("login success");
                 }
                 else {
                     res.send('invalid credentials')

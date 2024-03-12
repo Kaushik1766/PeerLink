@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import verify from './zod-schema'
+import verifyUid from "./zod-schema";
 
 
 function Login() {
@@ -44,6 +44,7 @@ function Login() {
                       placeholder=""
                       name="uid"
                       onChange={handleChange}
+                      required
                     />
                     <label htmlFor="floatingInput">UID</label>
                   </div>
@@ -55,18 +56,23 @@ function Login() {
                       placeholder=""
                       name="password"
                       onChange={handleChange}
+                      required
                     />
                     <label htmlFor="floatingPassword">Password</label>
                   </div>
                   <button className="btn btn-primary w-100 py-2 mb-2" type="submit"
-                    onClick={() => {
-                      if (verify(userData.uid)) {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (verifyUid(userData.uid)) {
                         axios.post('http://localhost:3000/login', {
                           uid: userData.uid,
                           password: userData.password
                         }).then((res) => {
-                          console.log(res)
-                          window.alert(res)
+                          console.log('login')
+                          console.log(res.data)
+                          window.alert(res.data)
+                        }).catch((err) => {
+                          console.log(err)
                         })
                       }
                       else {
@@ -103,6 +109,7 @@ function Login() {
                       placeholder=""
                       name="uid"
                       onChange={handleChange}
+                      required
                     />
                     <label htmlFor="floatingInput">UID</label>
                   </div>
@@ -114,6 +121,7 @@ function Login() {
                       placeholder=""
                       name="password"
                       onChange={handleChange}
+                      required
                     />
                     <label htmlFor="floatingPassword">Password</label>
                   </div>
@@ -125,6 +133,7 @@ function Login() {
                       placeholder=""
                       name="username"
                       onChange={handleChange}
+                      required
                     />
                     <label htmlFor="floatingUsername">Username</label>
                   </div>
@@ -137,15 +146,24 @@ function Login() {
                       (e.target.style.backgroundColor = "#2a953b")
                     }
                     onMouseOut={(e) => (e.target.style.backgroundColor = "#42b72a")}
-                    onClick={() => {
-                      setFlag(useFlag + 1)
-                      axios.post('http://localhost:3000/register', {
-                        uid: userData.uid,
-                        password: userData.password,
-                        username: userData.username
-                      }).then((res) => {
-                        window.alert(res)
-                      })
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (verifyUid(userData.uid)) {
+                        axios.post('http://localhost:3000/register', {
+                          uid: userData.uid,
+                          password: userData.password,
+                          username: userData.username
+                        }).then((res) => {
+                          console.log(res.data)
+                          window.alert(res.data)
+                          if (res.data == "successfully registered") {
+                            setFlag(useFlag + 1)
+                          }
+                        })
+                      }
+                      else {
+                        window.alert('Invalid Uid')
+                      }
                     }}
                   >
                     Create
@@ -170,16 +188,20 @@ function Login() {
                         placeholder=""
                         name="otp"
                         onChange={handleChange}
+                        required
                       />
                       <label htmlFor="floatingOtp">Otp</label>
                     </div>
                     <button className="btn btn-primary w-100 py-2 mb-2" type="submit"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
                         axios.post('http://localhost:3000/otp', {
                           uid: userData.uid,
                           otp: userData.otp
                         }).then((res) => {
-                          window.alert(res)
+                          window.alert(res.data)
+                          console.log(res.data)
+                          if(res.data=="email verified"){}
                         })
                       }}
                     >
