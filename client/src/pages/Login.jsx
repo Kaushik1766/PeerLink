@@ -87,7 +87,10 @@ function Login() {
                         }).then((res) => {
                           console.log('login')
                           if (res.data.msg == "login success") {
-                            setCookie('sessionId', res.data.sessionId)
+                            setCookie('sessionId', res.data.sessionId, {
+                              path:'/',
+                              maxAge: 345600,
+                            })
                           }
                           window.alert(res.data.msg)
                         }).catch((err) => {
