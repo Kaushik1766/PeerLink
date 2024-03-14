@@ -3,12 +3,13 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import verifyUid from "./zod-schema";
 import { useNavigate } from "react-router-dom";
-
+import { useCookies } from "react-cookie"
 
 function Login() {
 
   const [userData, setUserData] = useState({ uid: '', password: '', username: '', otp: '' })
   const [useFlag, setFlag] = useState(1)
+  const [cookie, setCookie, removeCookie] = useCookies([])
   const navigate = useNavigate();
   function handleChange(event) {
     let { name, value } = event.target;
@@ -20,11 +21,12 @@ function Login() {
   return (
     <section id="Login">
       <div className="container">
-        { useFlag>1 && (<button className="btn w-10 text- py-2 mt-2"
+        {
+          useFlag == 1 && <h1>‎ </h1>
+        }
+        {useFlag > 1 && (<button className="btn w-10 text-lg py-2 mt-2"
           onClick={() => {
-            if (useFlag > 1) {
-              setFlag(useFlag - 1)
-            }
+            setFlag(useFlag - 1)
           }}
         >back</button>)}
         <div className="row justify-content-evenly align-content-center vh-100">
@@ -42,7 +44,7 @@ function Login() {
             </h5>
           </div>
           <div className="z-3 shadow-lg p-3 pt-4 mb-4 bg-white rounded col-4">
-            <form className="col-12" >
+            <form className="col-12" onSubmit={(e) => { e.preventDefault(); }}>
               {useFlag == 1 && (
                 <>
                   <div className="form-floating mb-3">
@@ -84,8 +86,10 @@ function Login() {
                           password: userData.password
                         }).then((res) => {
                           console.log('login')
-                          console.log(res.data)
-                          window.alert(res.data)
+                          if (res.data.msg == "login success") {
+                            setCookie('sessionId', res.data.sessionId)
+                          }
+                          window.alert(res.data.msg)
                         }).catch((err) => {
                           console.log(err)
                           window.alert(err)
@@ -114,7 +118,12 @@ function Login() {
                     Create New Account
                   </button>
                   <button className="btn w-100 text-black py-2 mt-2"
-                    onClick={()=>setFlag(useFlag+2)}
+                    onClick={() => {
+                      if (userData.uid == '') {
+                        window.alert('Enter Uid to Verify')
+                      }
+                      else { setFlag(useFlag + 2) }
+                    }}
                   >Verify Email</button>
                 </>
               )}
@@ -237,7 +246,8 @@ function Login() {
                             window.alert(res.data)
                             console.log(res.data)
                             if (res.data == "email verified") {
-                              navigate("/")
+                              setFlag(useFlag - 2)
+                              //navigate("/")
                             }
                           }).catch((err) => {
                             console.log(err)

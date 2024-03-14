@@ -88,10 +88,10 @@ app.post('/login', async (req, res) => {
     let userDetails = ((await db.query(`select * from users where uid = '${uid}'`)).rows[0])
     // console.log(hashedPassword);
     if (userDetails == null) {
-        res.send('Invalid Login')
+        res.send({msg:'Invalid Login'})
     }
     else if (userDetails.verified != true) {
-        res.send('Email not verified')
+        res.send({msg:'Email not verified'})
     }
     else {
         let hashedPassword = userDetails.password
@@ -99,15 +99,15 @@ app.post('/login', async (req, res) => {
             bcrypt.compare(password, hashedPassword, async (err, result) => {
                 if (err) {
                     console.log('error occured');
-                    res.send('error occured')
+                    res.send({msg:'error occured'})
                 }
                 if (result) {
                     const sessionId = uuidv4();
                     await db.query(`update users set sessionid = '${sessionId}' where uid = '${uid}'`);
-                    res.send("login success");
+                    res.send({msg:"login success", sessionId:sessionId});
                 }
                 else {
-                    res.send('invalid credentials')
+                    res.send({msg:'invalid credentials'})
                 }
             })
     }
